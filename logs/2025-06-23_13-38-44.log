@@ -1,34 +1,0 @@
-Script start @ Mon Jun 23 13:38:44 MDT 2025
-Traceback (most recent call last):
-  File "/Users/azhang/Scripts/asset_assign_audit/query_assetsonar.py", line 8, in <module>
-    import requests
-ModuleNotFoundError: No module named 'requests'
-No valid token available, getting new token
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    42    0    42    0     0     81      0 --:--:-- --:--:-- --:--:--    81
-{
-  "version" : "11.17.1-t1748353320162"
-}Token valid until the following epoch time:  1750707582 (2025-06-23 13:39:42)
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  1015    0  1015    0     0    898      0 --:--:--  0:00:01 --:--:--   899100  168k    0  168k    0     0  97432      0 --:--:--  0:00:01 --:--:-- 97405100  625k    0  625k    0     0   225k      0 --:--:--  0:00:02 --:--:--  225k100 1679k    0 1679k    0     0   443k      0 --:--:--  0:00:03 --:--:--  443k100 1916k    0 1916k    0     0   486k      0 --:--:--  0:00:03 --:--:--  486k
---- Jamf computers saved to response_jamf_computers.json ---
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 34  349k   34  119k    0     0   146k      0  0:00:02 --:--:--  0:00:02  146k100  349k  100  349k    0     0   330k      0  0:00:01  0:00:01 --:--:--  330k
---- Jamf mobile devices saved to response_jamf_devices.json ---
-Token successfully invalidated
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    42  100    42    0     0     99      0 --:--:-- --:--:-- --:--:--    99
-{
-  "httpStatus" : 401,
-  "errors" : [ ]
-}Done query_jamf.sh
-Traceback (most recent call last):
-  File "/Users/azhang/Scripts/asset_assign_audit/parse_responses.py", line 2, in <module>
-    import mail1
-ModuleNotFoundError: No module named 'mail1'
--e 
-Script end @ Mon Jun 23 13:38:51 MDT 2025
