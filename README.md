@@ -1,4 +1,18 @@
 # Asset Assignment Auditor
 
-- audit asset assignments in AssetSonar
-- validate devices are checked out to the correct users
+## Overview
+- audit computers and mobile devices in AssetSonar against Jamf MDM
+- ensure devices are checked out to the correct users
+- automatically retire assets which are deleted from Jamf
+
+## Setup and run
+
+```sh
+git clone https://github.com/azuda/asset_assign_audit.git
+cd asset_assign_audit
+gpg .env.gpg
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+./run.sh
+```
