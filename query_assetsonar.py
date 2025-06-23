@@ -98,12 +98,14 @@ def get_checked_out_serial_numbers():
       serial_number = asset.get('bios_serial_number')
       device_name = asset.get('name', 'Unknown Device')
       assigned_email = asset.get('assigned_to_user_email')
+      manufacturer = asset.get('manufacturer')
       if serial_number: # Only add if the serial number exists and is not empty
         this_device = {}
         this_device['asset_id'] = asset_number
         this_device['serial_no'] = serial_number
         this_device['name'] = device_name
         this_device['assigned_email'] = assigned_email
+        this_device['manufacturer'] = manufacturer
         all_checked_out_assets.append(this_device)
 
     # Update total_pages from the response (it might be on the first page)
