@@ -50,10 +50,17 @@ checkTokenExpiration
 
 # get all computers id + name from jamf
 curl -X "GET" \
-  "$JAMF_URL/JSSResource/computers" \
+  "$JAMF_URL/api/v1/computers-inventory?section=HARDWARE&page=0&page-size=2000&sort=id%3Aasc" \
   -H "accept: application/json" \
-  -H "Authorization: Bearer $access_token" > response_qj.json
-echo "--- Jamf computers saved to response_qj.json ---"
+  -H "Authorization: Bearer $access_token" > response_jamf_computers.json
+echo "--- Jamf computers saved to response_jamf_computers.json ---"
+
+curl -X "GET" \
+  "$JAMF_URL/JSSResource/mobiledevices" \
+  -H "accept: application/json" \
+  -H "Authorization: Bearer $access_token" > response_jamf_devices.json
+echo "--- Jamf mobile devices saved to response_jamf_devices.json ---"
 
 invalidateToken
 curl -H "Authorization: Bearer $access_token" $url/api/v1/jamf-pro-version -X GET
+echo "Done query_jamf.sh"
