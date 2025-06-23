@@ -47,7 +47,7 @@ def main():
     if get_jamf_computer(sn) or get_jamf_device(sn):
       in_jamf.append({'asset_id': asset['asset_id'], 'serial_no': sn, 'name': asset['name'], 'assigned_email': asset['assigned_email']})
     else:
-      not_in_jamf.append({'asset_id': asset['asset_id'], 'serial_no': sn, 'manufacturer': asset['manufacturer']})
+      not_in_jamf.append({'asset_id': asset['asset_id'], 'serial_no': sn, 'name': asset['name'], 'manufacturer': asset['manufacturer']})
 
   result = {}
   result['assets_in_jamf'] = in_jamf

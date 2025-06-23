@@ -1,4 +1,4 @@
 .venv/
 .env
-assets.json
+assets*.json
 response*.json
