@@ -3,3 +3,4 @@ logs/
 .env
 assets*.json
 response*.json
+to_checkin.csv
