@@ -43,7 +43,7 @@ def add_jamf_users():
     user_data = get_jamf_user(asset['jamf_id']) if 'jamf_id' in asset else None
     # print(user_data)
     if user_data:
-      asset['jamf_user_data'] = user_data
+      asset['jamf_user_data'] = {'username': user_data['username'], 'real_name': user_data['realname'], 'email': user_data['email']}
   return None
 
 
@@ -92,6 +92,38 @@ def get_jamf_device(sn):
   return None
 
 
+def sort_assignments():
+  with open('assets.json', 'r') as f:
+    assets = json.load(f)
+
+  good = []
+  bad = []
+  unassigned = []
+  for asset in assets['assets_in_jamf']:
+    if asset.get('jamf_user_data'):
+      if asset['assigned_email'] == asset['jamf_user_data']['email']:
+        good.append(asset)
+      elif asset['jamf_user_data']['email'] is None:
+        unassigned.append(asset)
+      else:
+        bad.append(asset)
+    else:
+      unassigned.append(asset)
+
+  result = {}
+  result['correct_user'] = good
+  result['wrong_user'] = bad
+  result['unassigned'] = unassigned
+  result['total_correct'] = len(good)
+  result['total_wrong'] = len(bad)
+  result['total_unassigned'] = len(unassigned)
+  result['total_all'] = len(good) + len(bad) + len(unassigned)
+
+  with open('assets_assigned.json', 'w') as f:
+    json.dump(result, f, indent=2)
+
+  return None
+
 # ==========================================================================
 
 def main():
@@ -119,6 +151,9 @@ def main():
 
   with open('assets.json', 'w') as f:
     json.dump(result, f, indent=2)
+
+  # generate assets_assigned.json
+  sort_assignments()
 
   # done
 
