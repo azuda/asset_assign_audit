@@ -33,7 +33,7 @@ def checkin_asset(id):
   }
 
   response = requests.put(url, headers=headers, params=params, timeout=30, verify=False)
-  return response.json()
+  return response.status_code, response.json()
 
 # ==========================================================================
 
@@ -46,14 +46,14 @@ def main():
     this_asset = {'serial_no': sn}
     asset = next((a for a in ASSETS['assets_in_jamf'] if a['serial_no'] == sn), None)
     if asset:
-      response = checkin_asset(asset['asset_id'])
-      if str(response['status']).startswith('2'):
-        print(f'Checked in asset {sn}: {response}')
+      status_code, response_json = checkin_asset(asset['asset_id'])
+      if 200 <= status_code < 300:
+        print(f'Checked in asset {sn}: {response_json}')
         this_asset['name'] = asset['name']
-        this_asset['checkin_response'] = response
+        this_asset['checkin_response'] = response_json
         checked_in['all'].append(this_asset)
 
-  with open('response_CHECKED_IN.json', 'w') as f:
+  with open('assets_quick_checkin.json', 'w') as f:
     json.dump(checked_in, f, indent=2)
 
   print('Done')
