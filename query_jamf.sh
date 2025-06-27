@@ -69,4 +69,4 @@ echo "--- Jamf computer users saved to response_jamf_computer_users.json ---"
 
 invalidateToken
 curl -H "Authorization: Bearer $access_token" $url/api/v1/jamf-pro-version -X GET
-echo "Done query_jamf.sh"
+printf "\nDone query_jamf.sh"

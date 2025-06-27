@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import requests
 import sys
+import urllib3
 
 # ==========================================================================
 
@@ -49,8 +50,9 @@ def get_as_users(page_num):
     return None
   return response.json()
 
-def checkin_asset(id):
-  endpoint = f'assets/{id}/checkin.api'
+
+def checkin_asset(asset_id):
+  endpoint = f'assets/{asset_id}/checkin.api'
   url = f'{BASE_URL}/{endpoint}'
   headers = {
     'token': ASSETSONAR_TOKEN,
@@ -62,6 +64,7 @@ def checkin_asset(id):
 
   response = requests.put(url, headers=headers, params=params, timeout=30, verify=False)
   return response.json()
+
 
 def checkout_asset(id, user):
   endpoint = f'assets/{id}/checkout.api?user_id={user}'
@@ -77,10 +80,31 @@ def checkout_asset(id, user):
   response = requests.put(url, headers=headers, params=params, timeout=30, verify=False)
   return response.json()
 
-# ==========================================================================
 
-def main():
-  # start
+def get_user_id(email):
+  """Get user id from email address
+
+  Args:
+    email (str): User email address
+
+  Returns:
+    int: User id if found else None
+  """
+  with open('response_members.json', 'r') as f:
+    MEMBERS = json.load(f)
+  if not isinstance(MEMBERS, list):
+    print('Error: response_members.json does not contain a list of members.', file=sys.stderr)
+    return None
+
+  for user in MEMBERS:
+    if user.get('email') == email:
+      return user['id']
+  print(f'User with {email} not found in members list.', file=sys.stderr)
+  return None
+
+
+def get_all_assetsonar_users():
+  print('--- Getting AssetSonar user data ---')
 
   all_users = []
   current_page = 1
@@ -110,9 +134,9 @@ def main():
 
     if not page_data and current_page > 1:
     # if current_page > 5:
-      print('No more assets found on subsequent pages.')
+      print('No more users found on subsequent pages.')
       break
-  
+
   if all_users:
     with open('response_members.json', 'w') as f:
       json.dump(all_users, f, indent=2, sort_keys=True)
@@ -122,16 +146,44 @@ def main():
 
 
 
+# ==========================================================================
 
+def main():
+  # start
+
+  get_all_assetsonar_users()
+
+  all_reassigned = []
+  # checkin assets in wrong_user and checkout to their jamf-assigned user
   for asset in ASSETS['wrong_user']:
-    pass
-    # checkin_asset(asset['id'])
+    checkin_response = checkin_asset(asset['asset_id'])
+    # print(f'Checked in asset {asset["serial_no"]}:')
+    # print(checkin_response)
+    checkout_response = checkout_asset(asset['asset_id'], get_user_id(asset['jamf_user_data']['email']))
+    # print(f'Checked out asset {asset["serial_no"]} to user {asset["assigned_email"]}:')
+    # print(checkout_response)
+    all_reassigned.append({'serial_no': asset['serial_no'], 'checkin': checkin_response, 'checkout': checkout_response})
+  
+  # try to checkout unassigned assets to their jamf-assigned user
+  for asset in ASSETS['unassigned']:
+    jamf_user_data = asset.get('jamf_user_data')
+    jamf_email = jamf_user_data.get('email') if jamf_user_data else None
+    if jamf_email is None:
+      all_reassigned.append({'serial_no': asset['serial_no'], 'checkin': 'UNASSIGNED', 'checkout': 'NO_EMAIL'})
+    else:
+      checkout_response = checkout_asset(asset['asset_id'], get_user_id(jamf_email))
+      all_reassigned.append({'serial_no': asset['serial_no'], 'checkin': 'UNASSIGNED', 'checkout': checkout_response})
 
+  with open('assets_reassigned.json', 'w') as f:
+    json.dump(all_reassigned, f, indent=2, sort_keys=True)
 
+  print('Done')
 
   # end
 
 # ==========================================================================
 
 if __name__ == '__main__':
+  print(f'\n\n--- audit_users.py ---')
+  urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
   main()

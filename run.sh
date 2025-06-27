@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 LOG_DIR="./logs"
 LOG_FILE="$LOG_DIR/$(date '+%Y-%m-%d_%H-%M-%S').log"

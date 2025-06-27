@@ -10,6 +10,7 @@ import json
 import sys
 from dotenv import load_dotenv
 import os
+import urllib3
 
 # --- Configuration ---
 # IMPORTANT: Replace with your actual AssetSonar details
@@ -77,6 +78,7 @@ def get_checked_out_serial_numbers():
   total_pages = 1 # Initialize to 1 to ensure the loop runs at least once
 
   print(f'Connecting to AssetSonar at: {BASE_URL}')
+  print('--- Getting AssetSonar asset data ---')
 
   while current_page <= total_pages:
     print(f'Fetching page {current_page}...')
@@ -121,10 +123,12 @@ def get_checked_out_serial_numbers():
       print('No more assets found on subsequent pages.')
       break
 
-  print('\n--- All Checked-Out BIOS Serial Numbers ---')
+  # print('\n--- All Checked-Out BIOS Serial Numbers ---')
   return all_checked_out_assets
 
 if __name__ == '__main__':
+  print(f'\n\n--- query_assetsonar.py ---')
+  urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
   serial_numbers_dict = get_checked_out_serial_numbers()
   if serial_numbers_dict:
     with open('response_assetsonar.json', 'w') as f:
