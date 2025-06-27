@@ -16,3 +16,10 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ./run.sh
 ```
+
+## Deploy
+
+```sh
+cp com.asaudit.daemon.plist ~/Library/LaunchAgents
+launchctl load ~/Library/LaunchAgents/com.asaudit.daemon.plist
+```
