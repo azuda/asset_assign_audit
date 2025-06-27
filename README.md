@@ -1,4 +1,4 @@
-# Asset Assignment Auditor
+# AssetSonar Asset Assignment Auditor
 
 ## Overview
 - audit computers and mobile devices in AssetSonar against Jamf MDM
