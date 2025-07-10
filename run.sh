@@ -12,5 +12,7 @@ python3 query_assetsonar.py >> "$LOG_FILE" 2>&1
 python3 parse_responses.py >> "$LOG_FILE" 2>&1
 python3 retire_assets.py >> "$LOG_FILE" 2>&1
 python3 audit_users.py >> "$LOG_FILE" 2>&1
+python3 auto_checkout.py >> "$LOG_FILE" 2>&1
+python3 generate_report.py >> "$LOG_FILE" 2>&1
 
 echo -e "\nScript end @ $(date)" >> "$LOG_FILE"
