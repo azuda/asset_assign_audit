@@ -1,4 +1,8 @@
 import json
+import urllib3
+
+# aggregate responses obtained from AssetSonar and Jamf
+# sort assets by good / need reassign / need to retire
 
 # ==========================================================================
 
@@ -17,7 +21,7 @@ with open('response_jamf_devices.json', 'r') as f:
 # ==========================================================================
 
 def add_jamf_ids():
-  """grab Jamf id from JAMF_COMPUTERS and JAMF_DEVICES and add to ASSETSONAR_DATA
+  """Get Jamf id from JAMF_COMPUTERS and JAMF_DEVICES and add to ASSETSONAR_DATA
 
   Returns:
     None
@@ -34,7 +38,7 @@ def add_jamf_ids():
 
 
 def add_jamf_users():
-  """grab Jamf user and location info and add to ASSETSONAR_DATA
+  """Get Jamf user and location info and add to ASSETSONAR_DATA
 
   Returns:
     None
@@ -48,7 +52,7 @@ def add_jamf_users():
 
 
 def get_jamf_user(jamf_id):
-  """get Jamf user info by Jamf id
+  """Get Jamf user info by Jamf id
 
   Args:
     id (str): Jamf user id
@@ -63,7 +67,7 @@ def get_jamf_user(jamf_id):
 
 
 def get_jamf_computer(sn):
-  """get Jamf computer info by serial number
+  """Get Jamf computer info by serial number
 
   Args:
     sn (str): serial number of computer
@@ -78,7 +82,7 @@ def get_jamf_computer(sn):
 
 
 def get_jamf_device(sn):
-  """get Jamf mobile device info by serial number
+  """Get Jamf mobile device info by serial number
 
   Args:
     sn (str): serial number of mobile device
@@ -92,24 +96,30 @@ def get_jamf_device(sn):
   return None
 
 
-def sort_assignments():
-  with open('assets.json', 'r') as f:
-    assets = json.load(f)
+def sort_assignments(assets):
+  """Sort assets to different lists based on AS vs Jamf assigned user and save to file
 
+  Args:
+    data (dict): parsed and combined AS / Jamf asset data
+
+  Returns:
+    None
+  """
   good = []
   bad = []
   unassigned = []
   for asset in assets['assets_in_jamf']:
     if asset.get('jamf_user_data'):
-      if asset['assigned_email'] == asset['jamf_user_data']['email']:
+      if asset['assigned_email'] == asset['jamf_user_data']['email']: # AS and Jamf emails match
         good.append(asset)
-      elif asset['jamf_user_data']['email'] is None:
+      elif asset['jamf_user_data']['email'] is None:                  # no email assigned in Jamf
         unassigned.append(asset)
-      else:
+      else:                                                           # asset assigned to incorrect email
         bad.append(asset)
     else:
       unassigned.append(asset)
 
+  # populate data to send to .json
   result = {}
   result['correct_user'] = good
   result['wrong_user'] = bad
@@ -121,6 +131,7 @@ def sort_assignments():
 
   with open('assets_assigned.json', 'w') as f:
     json.dump(result, f, indent=2)
+  print(f'Saved assets sorted by assignment to assets_assigned.json')
 
   return None
 
@@ -133,10 +144,9 @@ def main():
 
   in_jamf = []
   not_in_jamf = []
-
   for asset in ASSETSONAR_DATA:
     sn = asset['serial_no']
-    if get_jamf_computer(sn) or get_jamf_device(sn):
+    if get_jamf_computer(sn) or get_jamf_device(sn): # sn grabbed from AS exists in Jamf
       in_jamf.append(asset)
     else:
       not_in_jamf.append(asset)
@@ -147,13 +157,14 @@ def main():
   result['total_in_jamf'] = len(in_jamf)
   result['total_not_in_jamf'] = len(not_in_jamf)
   result['total_all'] = len(in_jamf) + len(not_in_jamf)
-  # print(result)
 
-  with open('assets.json', 'w') as f:
-    json.dump(result, f, indent=2)
+  # print(result)
+  # with open('assets.json', 'w') as f:
+  #   json.dump(result, f, indent=2)
+  # print(f'Saved all checked out assets to assets.json')
 
   # generate assets_assigned.json
-  sort_assignments()
+  sort_assignments(result)
 
   # done
   print('Done')
@@ -162,4 +173,5 @@ def main():
 
 if __name__ == '__main__':
   print(f'\n\n--- parse_responses.py ---')
+  urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
   main()

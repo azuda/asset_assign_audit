@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# query jamf for computer and device data
 # https://developer.jamf.com/jamf-pro/docs/client-credentials
 
 source "./.env"
@@ -44,29 +45,33 @@ invalidateToken() {
   fi
 }
 
+# start
 checkTokenExpiration
 curl -H "Authorization: Bearer $access_token" $url/api/v1/jamf-pro-version -X GET
 checkTokenExpiration
 
-# get all computers id + name from jamf
+# get all computers from jamf
 curl -X "GET" \
   "$JAMF_URL/api/v1/computers-inventory?section=HARDWARE&page=0&page-size=2000&sort=id%3Aasc" \
   -H "accept: application/json" \
   -H "Authorization: Bearer $access_token" > response_jamf_computers.json
 echo "--- Jamf computers saved to response_jamf_computers.json ---"
 
+# get all mobile devices from jamf
 curl -X "GET" \
   "$JAMF_URL/JSSResource/mobiledevices" \
   -H "accept: application/json" \
   -H "Authorization: Bearer $access_token" > response_jamf_devices.json
 echo "--- Jamf mobile devices saved to response_jamf_devices.json ---"
 
+# get all computers from jamf w user + location data
 curl -X "GET" \
   "$JAMF_URL/api/v1/computers-inventory?section=USER_AND_LOCATION&page=0&page-size=2000&sort=general.name%3Aasc" \
   -H "accept: application/json" \
   -H "Authorization: Bearer $access_token" > response_jamf_computer_users.json
 echo "--- Jamf computer users saved to response_jamf_computer_users.json ---"
 
+# kill api access token
 invalidateToken
 curl -H "Authorization: Bearer $access_token" $url/api/v1/jamf-pro-version -X GET
 printf "\nDone query_jamf.sh"

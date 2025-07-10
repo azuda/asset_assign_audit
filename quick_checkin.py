@@ -3,7 +3,7 @@ import json
 from dotenv import load_dotenv
 import os
 import requests
-from datetime import datetime
+import urllib3
 
 # ==========================================================================
 
@@ -43,6 +43,7 @@ def main():
   checked_in = {'all': []}
 
   for sn in SERIALS:
+    sn = sn.upper()
     this_asset = {'serial_no': sn}
     asset = next((a for a in ASSETS['assets_in_jamf'] if a['serial_no'] == sn), None)
     if asset:
@@ -52,6 +53,7 @@ def main():
         this_asset['name'] = asset['name']
         this_asset['checkin_response'] = response_json
         checked_in['all'].append(this_asset)
+  checked_in['total'] = len(checked_in['all'])
 
   with open('assets_quick_checkin.json', 'w') as f:
     json.dump(checked_in, f, indent=2)
@@ -62,4 +64,5 @@ def main():
 # ==========================================================================
 
 if __name__ == '__main__':
+  urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
   main()

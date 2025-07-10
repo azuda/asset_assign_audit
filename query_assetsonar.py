@@ -2,8 +2,8 @@
 ## this is a modified ai script ##
 ##################################
 
-# queries assetsonar for all checked out assets
-# returns serial no. + device name
+# queries assetsonar for all checked out assets and dumps to .json
+# each entry has AS asset id, AS assigned email, manufacturer, device name, serial no
 
 import requests
 import json
@@ -21,7 +21,6 @@ import urllib3
 load_dotenv()
 ASSETSONAR_TOKEN = os.getenv('COMPANY_TOKEN')  # Replace with your actual AssetSonar API Token
 ASSETSONAR_SUBDOMAIN = os.getenv('COMPANY_SUBDOMAIN')  # Replace with your AssetSonar subdomain (e.g., yourcompany)
-
 BASE_URL = f'https://{ASSETSONAR_SUBDOMAIN}.assetsonar.com'
 API_ENDPOINT = '/assets/filter.api'
 
@@ -78,10 +77,10 @@ def get_checked_out_serial_numbers():
   total_pages = 1 # Initialize to 1 to ensure the loop runs at least once
 
   print(f'Connecting to AssetSonar at: {BASE_URL}')
-  print('--- Getting AssetSonar asset data ---')
+  print('Getting AssetSonar asset data...')
 
   while current_page <= total_pages:
-    print(f'Fetching page {current_page}...')
+    # print(f'Fetching page {current_page}...')
     page_data = fetch_assets_page(current_page, ASSETSONAR_TOKEN, BASE_URL, API_ENDPOINT)
 
     if page_data is None:
@@ -94,7 +93,7 @@ def get_checked_out_serial_numbers():
       print(f"Unexpected response format: 'assets' is not a list on page {current_page}.", file=sys.stderr)
       break
 
-    # Extract bios_serial_number from each asset
+    # Extract relevant info from each asset
     for asset in assets_on_page:
       asset_number = asset.get('sequence_num')
       serial_number = asset.get('bios_serial_number')

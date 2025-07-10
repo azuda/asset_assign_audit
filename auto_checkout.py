@@ -1,10 +1,3 @@
-##################################
-## this is a modified ai script ##
-##################################
-
-# queries assetsonar for all checked IN assets
-# returns serial no. + device name
-
 import requests
 import json
 import sys
@@ -12,6 +5,11 @@ from dotenv import load_dotenv
 import os
 import urllib3
 
+# modified copy of query_assetsonar.py
+# queries assetsonar for all checked IN assets
+# returns serial no. + device name
+
+# ==========================================================================
 
 load_dotenv()
 ASSETSONAR_TOKEN = os.getenv('COMPANY_TOKEN')  # Replace with your actual AssetSonar API Token
@@ -19,6 +17,7 @@ ASSETSONAR_SUBDOMAIN = os.getenv('COMPANY_SUBDOMAIN')  # Replace with your Asset
 BASE_URL = f'https://{ASSETSONAR_SUBDOMAIN}.assetsonar.com'
 API_ENDPOINT = 'assets/filter.api'
 
+# ==========================================================================
 
 def fetch_assets_page(page_num, token, base_url, api_endpoint):
   """
@@ -57,6 +56,7 @@ def fetch_assets_page(page_num, token, base_url, api_endpoint):
   except json.JSONDecodeError:
     print(f'Error decoding JSON from response for page {page_num}: {response.text}', file=sys.stderr)
     return None
+
 
 def get_available_serial_numbers():
   """
@@ -119,6 +119,7 @@ def get_available_serial_numbers():
   # print('\n--- All Checked in BIOS Serial Numbers ---')
   return all_available_assets
 
+
 def checkout_asset(id, user):
   endpoint = f'assets/{id}/checkout.api?user_id={user}'
   url = f'{BASE_URL}/{endpoint}'
@@ -160,6 +161,7 @@ def get_user_id(email):
   # print(f'User with {email} not found in members list.', file=sys.stderr)
   return None
 
+# ==========================================================================
 
 if __name__ == '__main__':
   print(f'\n\n--- auto_checkout.py ---')
