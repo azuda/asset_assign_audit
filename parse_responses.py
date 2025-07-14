@@ -159,9 +159,9 @@ def main():
   result['total_all'] = len(in_jamf) + len(not_in_jamf)
 
   # print(result)
-  # with open('assets.json', 'w') as f:
-  #   json.dump(result, f, indent=2)
-  # print(f'Saved all checked out assets to assets.json')
+  with open('assets.json', 'w') as f:
+    json.dump(result, f, indent=2)
+  print(f'Saved all checked out assets to assets.json')
 
   # generate assets_assigned.json
   sort_assignments(result)
