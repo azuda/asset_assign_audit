@@ -120,9 +120,9 @@ def get_user_id(email):
     return None
 
   for user in MEMBERS:
-    if user.get('email') == email:
+    if user['email'] == email:
       return user['id']
-  print(f'User with {email} not found in members list.', file=sys.stderr)
+  print(f'User {email} not found in members list.', file=sys.stderr)
   return None
 
 
@@ -186,6 +186,7 @@ def main():
   # checkin assets in wrong_user and checkout to their jamf-assigned user
   for asset in ASSETS['wrong_user']:
     checkin_response = checkin_asset(asset['asset_id'])
+    print(f'trying to checkout {asset["serial_no"]} with email {asset["jamf_user_data"]["email"]}')
     checkout_response = checkout_asset(asset['asset_id'], get_user_id(asset['jamf_user_data']['email']))
     # print(f'\n{checkin_response}\n{checkout_response}')
     all_reassigned.append({'serial_no': asset['serial_no'], 'checkin': checkin_response, 'checkout': checkout_response})

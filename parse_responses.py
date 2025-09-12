@@ -18,6 +18,9 @@ with open('response_jamf_computer_users.json', 'r') as f:
 with open('response_jamf_devices.json', 'r') as f:
   JAMF_DEVICES = json.load(f)
 
+with open('response_jamf_device_users.json', 'r') as f:
+  JAMF_DEVICE_USERS = json.load(f)
+
 # ==========================================================================
 
 def add_jamf_ids():
@@ -44,25 +47,46 @@ def add_jamf_users():
     None
   """
   for asset in ASSETSONAR_DATA:
-    user_data = get_jamf_user(asset['jamf_id']) if 'jamf_id' in asset else None
+    # user_data = get_jamf_user(asset['jamf_id']) if 'jamf_id' in asset else None
+    user_data = get_jamf_user(asset['serial_no'])
     # print(user_data)
     if user_data:
-      asset['jamf_user_data'] = {'username': user_data['username'], 'real_name': user_data['realname'], 'email': user_data['email']}
+      real_name = user_data.get('realName') or user_data.get('realname') or ''
+      email = user_data.get('email') or user_data.get('emailAddress') or ''
+      asset['jamf_user_data'] = {
+        'username': user_data.get('username', ''),
+        'real_name': real_name,
+        'email': email
+      }
   return None
 
 
-def get_jamf_user(jamf_id):
-  """Get Jamf user info by Jamf id
+def get_jamf_user(serial):
+  """Get Jamf user info by device serial number
 
   Args:
-    id (str): Jamf user id
+    serial (str): Jamf device serial number
 
   Returns:
     dict: Jamf user info if found else None
   """
-  for user in JAMF_COMPUTER_USERS['results']:
-    if user['id'] == jamf_id:
-      return user['userAndLocation']
+  computer = get_jamf_computer(serial)
+  if computer is None:
+    device = get_jamf_device(serial)
+
+  jamf_id = computer['id'] if computer else device['id'] if device else None
+  if jamf_id is None:
+    print(f'sn {serial} not found in Jamf')
+    return None
+
+  for a in JAMF_COMPUTER_USERS['results']:
+    if a['id'] == str(jamf_id):
+      return a['userAndLocation']
+  for b in JAMF_DEVICE_USERS['results']:
+    if b['mobileDeviceId'] == str(jamf_id):
+      return b['userAndLocation']
+
+  print(f'User data for device {serial} not found')
   return None
 
 

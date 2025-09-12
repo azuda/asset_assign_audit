@@ -71,6 +71,13 @@ curl -X "GET" \
   -H "Authorization: Bearer $access_token" > response_jamf_computer_users.json
 echo "--- Jamf computer users saved to response_jamf_computer_users.json ---"
 
+# get all mobile devices from jamf w user + location data
+curl -X 'GET' \
+  'https://rundle.jamfcloud.com/api/v2/mobile-devices/detail?section=USER_AND_LOCATION&page=0&page-size=2000&sort=displayName%3Aid' \
+  -H 'accept: application/json' \
+  -H "Authorization: Bearer $access_token" > response_jamf_device_users.json
+echo "--- Jamf mobile users saved to response_jamf_device_users.json ---"
+
 # kill api access token
 invalidateToken
 curl -H "Authorization: Bearer $access_token" $url/api/v1/jamf-pro-version -X GET

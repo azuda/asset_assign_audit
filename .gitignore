@@ -1,5 +1,6 @@
 .venv/
 logs/
+reports/
 .env
 assets*.json
 response*.json
